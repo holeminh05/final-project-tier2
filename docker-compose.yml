@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # 1. The Database (MongoDB)
+  db:
+    image: mongo:6.0
+    restart: always
+    volumes:
+      - db_data:/data/db
+    networks:
+      - app-network
+
+  # 2. The Web Application (Built from your code)
+  web:
+    build: ./app
+    restart: always
+    depends_on:
+      - db
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - upload_data:/app/uploads
+    networks:
+      - app-network
+    # We do NOT expose ports here. The Proxy handles it.
+
+  # 3. Reverse Proxy Container (Nginx Proxy Manager)
+  # This handles HTTPS/Let's Encrypt for your domain
+  proxy:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: always
+    ports:
+      - '80:80'
+      - '81:81' # Admin Panel
+      - '443:443'
+    volumes:
+      - proxy_data:/data
+      - letsencrypt:/etc/letsencrypt
+    networks:
+      - app-network
+
+  # 4. Monitoring: Prometheus
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - app-network
+
+  # 5. Monitoring: Grafana
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3001:3000" # Mapped to 3001 to avoid conflict with Web App
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - app-network
+
+volumes:
+  db_data:
+  upload_data:
+  proxy_data:
+  letsencrypt:
+  grafana_data:
+
+networks:
+  app-network:
+    driver: bridge
