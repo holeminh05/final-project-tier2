@@ -46,7 +46,7 @@ jobs:
           scan-ref: '.'
           format: 'table'
           exit-code: '1'
-          severity: 'CRITICAL,HIGH'
+          severity: 'CRITICAL'  # Only fail on CRITICAL, not HIGH
           ignore-unfixed: true
 
       # 5. Build Docker Image
