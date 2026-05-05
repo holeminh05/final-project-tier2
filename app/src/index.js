@@ -28,7 +28,7 @@ mongoose.connect('mongodb://db:27017/finalProjectDB')
 // Routes
 app.get('/', (req, res) => {
     res.send(`
-        <h1>Hello from Tier 2 Final Project - v2.0!
+        <h1>Hello from Tier 2 Final Project - live DEMO!</h1>
         <p>Server is running on Docker.</p>
         <p>Version: 1.0.0</p>
         <form action="/upload" method="post" enctype="multipart/form-data">
