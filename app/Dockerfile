@@ -5,11 +5,13 @@ WORKDIR /app
 # Copy package.json first for caching
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci --only=production
 
 # Copy the rest of the code
-COPY . .
+COPY src/ ./src/
+
+RUN mkdir -p /app/uploads
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["node", "src/index.js"]

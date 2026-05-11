@@ -3,51 +3,87 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-
 const app = express();
-const PORT = 3000;
 
-// Ensure uploads directory exists
+// === CONFIGURATION ===
+const PORT = process.env.PORT || 3000;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://db:27017/final-project';
+
+// === EJS SETUP ===
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// === STATIC FILES ===
+app.use(express.static(path.join(__dirname, 'public')));
+
+// === MIDDLEWARE ===
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// === FILE UPLOAD CONFIG ===
 const uploadDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Multer Setup for File Uploads
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const unique = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, unique + '-' + file.originalname);
+  }
 });
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
-// MongoDB Connection (Host is 'db' because of Docker Compose networking)
-mongoose.connect('mongodb://db:27017/finalProjectDB')
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('MongoDB connection error:', err));
+// === DATABASE CONNECTION ===
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.error('❌ MongoDB error:', err));
 
-// Routes
+// === ROUTES ===
+
+// Home page - renders our beautiful UI
 app.get('/', (req, res) => {
-    res.send(`
-        <h1>Hello from Tier 2 Final Project!</h1>
-        <p>Server is running on Docker.</p>
-        <p>Version: 1.0.0</p>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="myFile">
-            <button type="submit">Upload File</button>
-        </form>
-    `);
+  res.render('index', { 
+    title: 'Final Project - Tier 2',
+    version: '2.0.0'
+  });
 });
 
-app.post('/upload', upload.single('myFile'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).send('No file uploaded');
-    }
-    res.send(`File ${req.file.filename} uploaded successfully!`);
+// Health check for Prometheus
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
 });
 
-// Health Check for Monitoring
-app.get('/health', (req, res) => res.status(200).send('OK'));
+// File upload endpoint
+app.post('/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, error: 'No file uploaded' });
+  }
+  res.json({ 
+    success: true, 
+    filename: req.file.filename,
+    originalname: req.file.originalname,
+    size: req.file.size
+  });
+});
 
-app.listen(PORT, () => {
-    console.log(`App running on port ${PORT}`);
+// List uploaded files
+app.get('/uploads', (req, res) => {
+  fs.readdir(uploadDir, (err, files) => {
+    if (err) return res.status(500).json({ error: 'Failed to read uploads' });
+    res.json(files.filter(f => !f.startsWith('.')));
+  });
+});
+
+// Serve uploaded files
+app.use('/uploads', express.static(uploadDir));
+
+// === START SERVER ===
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });

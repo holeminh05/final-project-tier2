@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Tier 2 Deployment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #6366f1; --secondary: #8b5cf6; --dark: #0f172a;
+            --card: #1e293b; --text: #f1f5f9; --muted: #94a3b8;
+            --success: #10b981; --gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--dark); color: var(--text);
+            line-height: 1.6; min-height: 100vh;
+        }
+        .bg-animation {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; background: var(--dark); overflow: hidden;
+        }
+        .bg-animation .circle {
+            position: absolute; border-radius: 50%;
+            background: var(--primary); opacity: 0.1;
+            animation: float 20s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-100px) rotate(180deg); }
+        }
+        nav {
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
+            padding: 1rem 5%; position: fixed; width: 100%; top: 0;
+            z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .nav-container {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo {
+            font-size: 1.3rem; font-weight: bold;
+            background: var(--gradient); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero {
+            margin-top: 80px; padding: 4rem 5%; text-align: center;
+            background: var(--gradient); position: relative;
+        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.1rem; opacity: 0.95; margin-bottom: 2rem; }
+        .badges { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+        .badge {
+            background: rgba(255,255,255,0.15); padding: 0.4rem 1rem;
+            border-radius: 50px; font-size: 0.9rem; backdrop-filter: blur(5px);
+        }
+        .stats {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem; max-width: 1000px; margin: -3rem auto 0;
+            padding: 0 5%; position: relative; z-index: 2;
+        }
+        .stat-card {
+            background: var(--card); padding: 1.5rem; border-radius: 12px;
+            text-align: center; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .stat-card i { font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .stat-card h3 { font-size: 1.8rem; margin: 0.3rem 0; }
+        .stat-card p { color: var(--muted); font-size: 0.9rem; }
+        .section { padding: 4rem 5%; max-width: 1200px; margin: 0 auto; }
+        .section-title {
+            text-align: center; font-size: 2rem; margin-bottom: 2.5rem;
+            background: var(--gradient); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .features-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .feature-card {
+            background: var(--card); padding: 1.5rem; border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+        .feature-card h3 { color: var(--primary); margin: 0.5rem 0 1rem; }
+        .upload-box {
+            border: 3px dashed var(--primary); border-radius: 12px;
+            padding: 2.5rem; text-align: center; cursor: pointer;
+            background: rgba(99, 102, 241, 0.05);
+            transition: all 0.3s; max-width: 600px; margin: 0 auto;
+        }
+        .upload-box:hover { background: rgba(99, 102, 241, 0.1); transform: scale(1.02); }
+        .upload-box i { font-size: 3rem; color: var(--primary); margin-bottom: 1rem; }
+        .upload-box input { display: none; }
+        .btn {
+            background: var(--gradient); color: white; padding: 0.8rem 1.8rem;
+            border: none; border-radius: 8px; cursor: pointer;
+            font-size: 1rem; margin-top: 1rem; transition: transform 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .files-list { margin-top: 2rem; text-align: left; }
+        .file-item {
+            background: var(--dark); padding: 1rem; margin: 0.5rem 0;
+            border-radius: 8px; display: flex; justify-content: space-between;
+            align-items: center; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .file-item a { color: var(--primary); text-decoration: none; }
+        footer {
+            background: var(--card); padding: 2rem 5%; text-align: center;
+            margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .footer-links { display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 1rem; }
+        .footer-links a { color: var(--muted); text-decoration: none; }
+        .footer-links a:hover { color: var(--primary); }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.8rem; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="circle" style="width:100px;height:100px;top:10%;left:10%"></div>
+        <div class="circle" style="width:150px;height:150px;top:60%;left:70%;animation-delay:5s"></div>
+        <div class="circle" style="width:80px;height:80px;top:40%;left:80%;animation-delay:10s"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo"><i class="fas fa-rocket"></i> Final Project</div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1><i class="fas fa-cloud"></i> Tier 2 Containerized Deployment</h1>
+        <p>Production-Grade CI/CD System with Docker Compose</p>
+        <div class="badges">
+            <span class="badge"><i class="fas fa-check"></i> HTTPS</span>
+            <span class="badge"><i class="fas fa-docker"></i> Docker</span>
+            <span class="badge"><i class="fas fa-sync"></i> Auto-Deploy</span>
+            <span class="badge"><i class="fas fa-chart-line"></i> Monitoring</span>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat-card">
+            <i class="fas fa-server"></i>
+            <h3 id="containerCount">7</h3>
+            <p>Containers</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-clock"></i>
+            <h3 id="uptime">--</h3>
+            <p>Uptime</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-code-branch"></i>
+            <h3>CI/CD</h3>
+            <p>Automated</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Secure</h3>
+            <p>Monitored</p>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <section class="section">
+        <h2 class="section-title"><i class="fas fa-star"></i> Project Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3><i class="fas fa-rocket"></i> Automated CI/CD</h3>
+                <p>GitHub Actions pipeline with build, test, security scan, and auto-deploy.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-docker"></i> Docker Compose</h3>
+                <p>Multi-container architecture with proper service separation and networking.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-database"></i> Persistent Storage</h3>
+                <p>MongoDB with Docker volumes ensuring data survives restarts.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-lock"></i> Security</h3>
+                <p>Trivy scanning, HTTPS with Let's Encrypt, secure secret management.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-chart-bar"></i> Monitoring</h3>
+                <p>Prometheus + Grafana dashboards for real-time system visibility.</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-sync-alt"></i> Auto-Recovery</h3>
+                <p>Restart policies ensure services recover automatically from failures.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upload -->
+    <section class="section" style="background:var(--card)">
+        <h2 class="section-title"><i class="fas fa-upload"></i> File Upload Demo</h2>
+        <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <h3>Click to Upload a File</h3>
+            <p>Supports images, documents, archives</p>
+            <input type="file" id="fileInput" onchange="handleUpload(event)">
+            <button class="btn">Choose File</button>
+        </div>
+        <div id="uploadStatus" style="margin-top:1rem"></div>
+        <div class="files-list">
+            <h3><i class="fas fa-folder-open"></i> Uploaded Files</h3>
+            <div id="filesContainer">
+                <p style="text-align:center;color:var(--muted);padding:1.5rem">No files uploaded yet</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Monitoring Links -->
+    <section class="section">
+        <h2 class="section-title"><i class="fas fa-chart-line"></i> System Monitoring</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3><i class="fas fa-tachometer-alt"></i> Prometheus</h3>
+                <p>Metrics collection and time-series database.</p>
+                <a href="http://<%= process.env.PUBLIC_IP || 'YOUR_IP' %>:9090" target="_blank" class="btn" style="margin-top:1rem">
+                    <i class="fas fa-external-link-alt"></i> View Metrics
+                </a>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-chart-area"></i> Grafana</h3>
+                <p>Beautiful dashboards for CPU, memory, containers.</p>
+                <a href="http://<%= process.env.PUBLIC_IP || 'YOUR_IP' %>:3001" target="_blank" class="btn" style="margin-top:1rem">
+                    <i class="fas fa-external-link-alt"></i> View Dashboards
+                </a>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-heartbeat"></i> Health Status</h3>
+                <p>Real-time health checks and availability monitoring.</p>
+                <div style="margin-top:1rem;padding:1rem;background:rgba(16,185,129,0.1);border-radius:8px;border-left:4px solid var(--success)">
+                    <i class="fas fa-check-circle" style="color:var(--success)"></i>
+                    <span style="margin-left:0.5rem">All Systems Operational</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="https://github.com/holeminh05/final-project-tier2" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+            <a href="http://<%= process.env.PUBLIC_IP || 'YOUR_IP' %>:9090" target="_blank"><i class="fas fa-chart-line"></i> Prometheus</a>
+            <a href="http://<%= process.env.PUBLIC_IP || 'YOUR_IP' %>:3001" target="_blank"><i class="fas fa-chart-area"></i> Grafana</a>
+        </div>
+        <p>&copy; 2026 Final Project - Software Deployment, Operations & Maintenance</p>
+        <p style="margin-top:0.5rem;color:var(--muted);font-size:0.9rem">
+            Team: Hồ Lê Minh (523K0015) • Ngô Thượng Tông (523K0028) • Nguyễn Huy Hùng (523K0007)
+        </p>
+    </footer>
+
+    <script>
+        // File Upload Handler
+        async function handleUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const status = document.getElementById('uploadStatus');
+            status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            
+            try {
+                const res = await fetch('/upload', { method: 'POST', body: formData });
+                const data = await res.json();
+                
+                if (data.success) {
+                    status.innerHTML = `<span style="color:var(--success)"><i class="fas fa-check"></i> Uploaded: ${data.originalname}</span>`;
+                    loadFiles();
+                } else {
+                    throw new Error(data.error || 'Upload failed');
+                }
+            } catch (err) {
+                status.innerHTML = `<span style="color:#ef4444"><i class="fas fa-exclamation"></i> Error: ${err.message}</span>`;
+            }
+        }
+
+        // Load Files List
+        async function loadFiles() {
+            try {
+                const res = await fetch('/uploads');
+                const files = await res.json();
+                const container = document.getElementById('filesContainer');
+                
+                if (files.length === 0) {
+                    container.innerHTML = '<p style="text-align:center;color:var(--muted);padding:1.5rem">No files uploaded yet</p>';
+                } else {
+                    container.innerHTML = files.map(f => `
+                        <div class="file-item">
+                            <span><i class="fas fa-file"></i> ${f}</span>
+                            <a href="/uploads/${f}" target="_blank"><i class="fas fa-download"></i> Download</a>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading files:', err);
+            }
+        }
+
+        // Update Uptime
+        async function updateUptime() {
+            try {
+                const res = await fetch('/health');
+                const data = await res.json();
+                if (data.uptime) {
+                    const s = Math.floor(data.uptime);
+                    const d = Math.floor(s/86400), h = Math.floor((s%86400)/3600), m = Math.floor((s%3600)/60);
+                    document.getElementById('uptime').textContent = `${d}d ${h}h ${m}m`;
+                }
+            } catch (err) { console.error('Uptime error:', err); }
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFiles();
+            updateUptime();
+            setInterval(updateUptime, 60000);
+        });
+    </script>
+</body>
+</html>
