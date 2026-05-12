@@ -59,7 +59,6 @@ app.get('/', (req, res) => {
             <button type="submit">Upload File</button>
         </form>
     `);
->>>>>>> 1ec3ec5dbf77c142d95df83ee30ee7c6357336a8
 });
 
 // Health check for Prometheus
