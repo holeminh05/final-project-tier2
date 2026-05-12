@@ -16,4 +16,8 @@ scrape_configs:
 
   - job_name: 'cadvisor'
     static_configs:
+<<<<<<< HEAD
       - targets: ['cadvisor:8080']
+=======
+      - targets: ['cadvisor:8080']
+>>>>>>> 1ec3ec5dbf77c142d95df83ee30ee7c6357336a8

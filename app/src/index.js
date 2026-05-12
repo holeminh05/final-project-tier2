@@ -44,10 +44,22 @@ mongoose.connect(MONGODB_URI)
 
 // Home page - renders our beautiful UI
 app.get('/', (req, res) => {
+<<<<<<< HEAD
   res.render('index', { 
     title: 'Final Project - Tier 2',
     version: '2.0.0'
   });
+=======
+    res.send(`
+        <h1>Hello from Tier 2 Final Project - live DEMO!</h1>
+        <p>Server is running on Docker.</p>
+        <p>Version: 1.0.0</p>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="myFile">
+            <button type="submit">Upload File</button>
+        </form>
+    `);
+>>>>>>> 1ec3ec5dbf77c142d95df83ee30ee7c6357336a8
 });
 
 // Health check for Prometheus
